@@ -27,23 +27,35 @@ export default function AuthModal({ isOpen, onClose }) {
     }
 
     setLoading(true);
+    console.log('AuthModal: Starting authentication', { isLogin, email });
 
     try {
-      const { error: authError } = isLogin
+      const result = isLogin
         ? await signInWithEmail(email, password)
         : await signUpWithEmail(email, password, name);
 
-      if (authError) {
-        setError(authError);
+      console.log('AuthModal: Auth result', result);
+
+      if (result.error) {
+        console.error('AuthModal: Authentication error', result.error);
+        setError(result.error);
         setLoading(false);
         return;
       }
 
-      // Context state updates via Firebase onAuthStateChanged listener
-      setLoading(false);
-      onClose();
-    } catch {
-      setError('An unexpected error occurred. Please try again.');
+      if (result.user) {
+        console.log('AuthModal: Authentication successful for user:', result.user.email);
+        // Context state updates via Firebase onAuthStateChanged listener
+        setLoading(false);
+        onClose();
+      } else {
+        console.error('AuthModal: No user returned from authentication');
+        setError('Authentication failed. Please try again.');
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('AuthModal: Unexpected error during authentication:', error);
+      setError(`An unexpected error occurred: ${error.message || 'Please try again.'}`);
       setLoading(false);
     }
   };

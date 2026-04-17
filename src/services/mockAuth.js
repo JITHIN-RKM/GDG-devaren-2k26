@@ -25,9 +25,6 @@ export async function signUpWithEmail(email, password, displayName) {
   mockUsers.set(email, { user, password });
   console.log('MockAuth: User created successfully:', user.uid);
   
-  // Notify listeners of auth state change
-  notifyAuthChange(user);
-  
   return { user, error: null };
 }
 
@@ -49,10 +46,6 @@ export async function signInWithEmail(email, password) {
   }
   
   console.log('MockAuth: User signed in successfully:', userData.user.uid);
-  
-  // Notify listeners of auth state change
-  notifyAuthChange(userData.user);
-  
   return { user: userData.user, error: null };
 }
 
@@ -63,34 +56,16 @@ export async function signInWithGoogle() {
 
 export async function logOut() {
   console.log('MockAuth: User logged out');
-  
-  // Notify listeners of auth state change (no user)
-  notifyAuthChange(null);
-  
   return { error: null };
 }
 
-// Global state to track current user for mock auth
-let currentUser = null;
-let authChangeListeners = [];
-
 export function onAuthChange(callback) {
-  // Add listener to array
-  authChangeListeners.push(callback);
-  
-  // Immediately call with current user state
-  callback(currentUser);
+  // In a real app, this would listen to Firebase auth state changes
+  // For mock, we'll just call the callback with null (no user)
+  callback(null);
   
   // Return unsubscribe function
-  return () => {
-    authChangeListeners = authChangeListeners.filter(listener => listener !== callback);
-  };
-}
-
-// Helper function to notify all listeners of auth state change
-function notifyAuthChange(user) {
-  currentUser = user;
-  authChangeListeners.forEach(callback => callback(user));
+  return () => {};
 }
 
 export async function saveUserProfile(userId, profileData) {
