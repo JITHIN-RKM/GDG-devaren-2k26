@@ -1,16 +1,20 @@
-# Altezza — Your AI Career Agent
+# Altezza — OpportunityRadar: AI Agent for Internship and Opportunity Discovery
 
 Hackathon — [DEV ARENA]
 Welcome to the official hackathon repository by [GDG,UCE-OU].
 
 ## Team Details
-- **Team Name:Mahreen&sumaiya
-- **Team Lead:Mahreen
-- **Team Members:
-  - Member 1:sumaiya
+- **Team Name**: Altezza
+- **Team Members**:
+  - Member 1: CHRIS PREETHAM
+  - Member 2: JITHIN ROKKAM
+  - Member 3: MEENAKSHI THUMMA
 
 ## Problem Statement
-Altezza is an AI-powered career agent that provides highly personalized, localized academic and employment opportunities, complete with "AI Advantage" application tailoring.
+Internships, hackathons, research openings, and scholarships are scattered across a dozen platforms and notice boards. Students either find out too late, apply for things they are underqualified for, or miss opportunities entirely because no one pointed them in the right direction.
+
+## Description
+Build an AI agent that maintains a profile for each student covering skills, CGPA, year, branch, and goals, and scans opportunity platforms in the background. It filters and ranks results against the student profile and delivers a daily shortlist tailored to them. When a student opens a listing, the agent audits their resume against it and drafts a cover letter or cold email. Over time it learns what the student actually engages with and adjusts accordingly.
 
 ## Submission Guidelines
 
