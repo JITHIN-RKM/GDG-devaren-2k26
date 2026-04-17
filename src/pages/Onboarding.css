@@ -1,0 +1,238 @@
+/* ============================================
+   ONBOARDING PAGE STYLES — Lite & Premium
+   ============================================ */
+
+.onboarding {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-md);
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+.onboarding__container {
+  width: 100%;
+  max-width: 540px;
+}
+
+/* Progress Bar */
+.onboarding__progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.onboarding__progress-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.onboarding__progress-fill {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+  transition: width 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.onboarding__progress-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+}
+
+/* Card */
+.onboarding__card {
+  padding: var(--space-3xl);
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: 32px;
+  box-shadow: var(--shadow-lg), 0 0 60px rgba(99, 102, 241, 0.05);
+}
+
+/* Step */
+.onboarding__step-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-xl);
+}
+
+.onboarding__step-title {
+  font-family: var(--font-heading);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.onboarding__step-desc {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-2xl);
+}
+
+/* Input */
+.onboarding__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.onboarding__input {
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+}
+
+.onboarding__input:focus {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.1);
+}
+
+.onboarding__input--cgpa {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-align: center;
+  max-width: 180px;
+  margin: 0 auto;
+}
+
+/* Interest Tags */
+.onboarding__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.onboarding__tag {
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.onboarding__tag:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}
+
+.onboarding__tag--active {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+/* Year Grid */
+.onboarding__year-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.onboarding__year-card {
+  padding: 18px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: 20px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.onboarding__year-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.onboarding__year-card--active {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+/* CGPA Visual */
+.onboarding__cgpa-visual {
+  margin-top: var(--space-xl);
+}
+
+.onboarding__cgpa-bar {
+  height: 10px;
+  background: rgba(148, 163, 184, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.onboarding__cgpa-fill {
+  height: 100%;
+  background: var(--gradient-primary);
+  transition: width 300ms ease;
+}
+
+/* Navigation */
+.onboarding__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.onboarding__next, 
+.onboarding__submit {
+  flex: 1;
+  padding: 16px;
+  border-radius: var(--radius-btn);
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.onboarding__back {
+  padding: 16px 24px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-radius: var(--radius-btn);
+}
+
+.onboarding__step-icon svg {
+  transition: transform 0.3s ease;
+}
+
+.onboarding__step:hover .onboarding__step-icon svg {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .onboarding__card {
+    padding: var(--space-xl) var(--space-lg);
+    border-radius: 24px;
+  }
+}
