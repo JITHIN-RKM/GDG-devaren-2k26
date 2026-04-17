@@ -9,13 +9,39 @@
 const AI_BASE_URL = (import.meta.env.VITE_AI_BASE_URL || 'https://api.openai.com/v1').replace(/\/$/, '');
 const AI_API_KEY = import.meta.env.VITE_AI_API_KEY || '';
 const AI_MODEL = import.meta.env.VITE_AI_MODEL || 'gpt-4o-mini';
+const AI_MAX_TOKENS = Number(import.meta.env.VITE_AI_MAX_TOKENS || 2048);
+const AI_TEMPERATURE = Number(import.meta.env.VITE_AI_TEMPERATURE || 0.7);
+const AI_TOP_P = Number(import.meta.env.VITE_AI_TOP_P || 0.95);
+const AI_ENABLE_THINKING = String(import.meta.env.VITE_AI_ENABLE_THINKING || '').toLowerCase() === 'true';
+
+function isLikelyLocalBaseUrl(url) {
+  try {
+    const u = new URL(url);
+    return u.hostname === 'localhost' || u.hostname === '127.0.0.1' || u.hostname === '::1';
+  } catch {
+    return false;
+  }
+}
 
 function assertConfigured() {
-  if (!AI_API_KEY) {
+  // Ollama and other local OpenAI-compatible servers typically don't require an API key.
+  if (!AI_API_KEY && !isLikelyLocalBaseUrl(AI_BASE_URL)) {
     throw new Error(
       'AI is not configured. Set VITE_AI_API_KEY (and optionally VITE_AI_BASE_URL, VITE_AI_MODEL) in your environment.'
     );
   }
+}
+
+function buildHeaders() {
+  const headers = { 'Content-Type': 'application/json' };
+  if (AI_API_KEY) headers.Authorization = `Bearer ${AI_API_KEY}`;
+  return headers;
+}
+
+function buildHeadersForStream(isStream) {
+  const headers = buildHeaders();
+  headers.Accept = isStream ? 'text/event-stream' : 'application/json';
+  return headers;
 }
 
 /**
@@ -82,14 +108,15 @@ export async function* streamChat(messages, opportunity) {
 
     const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${AI_API_KEY}`,
-      },
+      headers: buildHeadersForStream(true),
       body: JSON.stringify({
         model: AI_MODEL,
         messages: formattedMessages,
+        max_tokens: AI_MAX_TOKENS,
+        temperature: AI_TEMPERATURE,
+        top_p: AI_TOP_P,
         stream: true,
+        ...(AI_ENABLE_THINKING ? { chat_template_kwargs: { enable_thinking: true } } : {}),
       }),
     });
 
@@ -143,14 +170,15 @@ export async function sendChat(messages, opportunity) {
 
     const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${AI_API_KEY}`,
-      },
+      headers: buildHeadersForStream(false),
       body: JSON.stringify({
         model: AI_MODEL,
         messages: formattedMessages,
+        max_tokens: AI_MAX_TOKENS,
+        temperature: AI_TEMPERATURE,
+        top_p: AI_TOP_P,
         stream: false,
+        ...(AI_ENABLE_THINKING ? { chat_template_kwargs: { enable_thinking: true } } : {}),
       }),
     });
 

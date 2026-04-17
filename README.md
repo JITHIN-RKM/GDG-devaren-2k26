@@ -36,6 +36,10 @@ Required:
 Optional:
 - `VITE_AI_BASE_URL` (default: `https://api.openai.com/v1`)
 - `VITE_AI_MODEL` (default: `gpt-4o-mini`)
+- `VITE_AI_MAX_TOKENS` (default: `2048`)
+- `VITE_AI_TEMPERATURE` (default: `0.7`)
+- `VITE_AI_TOP_P` (default: `0.95`)
+- `VITE_AI_ENABLE_THINKING` (default: `false`, useful for NVIDIA)
 
 ## Submission Guidelines
 
