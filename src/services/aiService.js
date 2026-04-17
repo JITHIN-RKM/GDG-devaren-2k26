@@ -24,6 +24,12 @@ function isLikelyLocalBaseUrl(url) {
 }
 
 function assertConfigured() {
+  // For development, we'll use mock responses if no real API is configured
+  if (!AI_API_KEY || AI_API_KEY.includes('placeholder') || AI_API_KEY.includes('test-key')) {
+    console.log('Using mock AI responses for development');
+    return; // Allow mock responses
+  }
+  
   // Ollama and other local OpenAI-compatible servers typically don't require an API key.
   if (!AI_API_KEY && !isLikelyLocalBaseUrl(AI_BASE_URL)) {
     throw new Error(
@@ -95,16 +101,128 @@ function extractNonStreamContent(json) {
 }
 
 /**
+ * Generate mock AI responses for development
+ */
+function generateMockResponse(userMessage, opportunity) {
+  const message = userMessage.toLowerCase();
+  
+  if (message.includes('hi') || message.includes('hello')) {
+    return `Hello! I'm here to help you with the **${opportunity.title}** opportunity at **${opportunity.organization}**. 
+
+This looks like a great ${opportunity.type} opportunity! Based on the details, you'd be working with ${opportunity.description.split('.')[0]}. 
+
+What would you like to know about this opportunity? I can help you:
+- Understand the requirements better
+- Assess your fit for the role
+- Generate a cover letter
+- Draft a cold email
+- Provide application tips`;
+  }
+  
+  if (message.includes('cover letter')) {
+    return `I'd be happy to help you create a cover letter for the **${opportunity.title}** position!
+
+Here's a professional draft:
+
+---
+
+Dear Hiring Manager,
+
+I am writing to express my strong interest in the ${opportunity.title} position at ${opportunity.organization}. 
+
+With my background in [Your Major], I'm particularly drawn to this opportunity because it aligns perfectly with my skills and career aspirations. The opportunity to ${opportunity.description.split('.')[0]} excites me greatly.
+
+My qualifications include:
+- [Relevant coursework or experience]
+- [Technical skills relevant to the role]
+- [Projects or achievements]
+
+I am confident that my skills and enthusiasm would make me a valuable addition to your team.
+
+Thank you for considering my application. I look forward to discussing how I can contribute to ${opportunity.organization}.
+
+Best regards,
+[Your Name]
+
+---
+
+Would you like me to customize this further based on your specific background?`;
+  }
+  
+  if (message.includes('requirements') || message.includes('qualify')) {
+    return `Great question about the requirements for **${opportunity.title}**! 
+
+Here are the key requirements:
+${opportunity.requirements.map(req => `  - ${req}`).join('\n')}
+
+**Eligibility:** ${opportunity.eligibility}
+
+To assess your fit, I'd recommend:
+1. Highlighting any experience with the technologies mentioned
+2. Emphasizing relevant coursework or projects
+3. Showing enthusiasm for ${opportunity.organization}'s mission
+
+Would you like me to help you identify which of your strengths align best with these requirements?`;
+  }
+  
+  if (message.includes('deadline') || message.includes('when')) {
+    return `The deadline for **${opportunity.title}** is **${opportunity.deadline}**. 
+
+That gives you some time to prepare a strong application! Here's what I'd suggest:
+- Start drafting your materials this week
+- Focus on the requirements that match your background
+- Reach out to any contacts at ${opportunity.organization} if possible
+
+The position is located in **${opportunity.location}** and offers **${opportunity.stipend}**.
+
+Is there anything specific about the timeline or application process you'd like help with?`;
+  }
+  
+  // Default response
+  return `That's a great question about the **${opportunity.title}** opportunity! 
+
+This ${opportunity.type} at **${opportunity.organization}** looks like an excellent chance to ${opportunity.description.split('.')[0].toLowerCase()}. 
+
+The role requires ${opportunity.requirements.length} key qualifications and is open to ${opportunity.eligibility.toLowerCase()}.
+
+I can help you with:
+- Understanding specific requirements
+- Assessing your fit for the role  
+- Generating application materials
+- Providing interview preparation tips
+
+What specific aspect would you like to explore further?`;
+}
+
+/**
  * Send a chat message to a cloud API and get a streamed response.
  * Returns an async generator that yields text chunks.
  */
 export async function* streamChat(messages, opportunity) {
   const systemPrompt = buildSystemPrompt(opportunity);
-
   const formattedMessages = toChatMessages(messages, systemPrompt);
 
   try {
     assertConfigured();
+
+    // Check if we should use mock responses
+    if (!AI_API_KEY || AI_API_KEY.includes('placeholder') || AI_API_KEY.includes('test-key')) {
+      const lastMessage = messages[messages.length - 1];
+      const mockResponse = generateMockResponse(lastMessage.content, opportunity);
+      
+      // Simulate streaming by yielding chunks of the mock response
+      const words = mockResponse.split(' ');
+      let currentText = '';
+      
+      for (const word of words) {
+        currentText += word + ' ';
+        yield word + ' ';
+        // Small delay to simulate streaming
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      
+      return;
+    }
 
     const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
       method: 'POST',
@@ -122,7 +240,7 @@ export async function* streamChat(messages, opportunity) {
 
     if (!response.ok) {
       const text = await response.text().catch(() => '');
-      throw new Error(`AI API error: ${response.status} ${response.statusText}${text ? ` — ${text}` : ''}`);
+      throw new Error(`AI API error: ${response.status} ${response.statusText}${text ? ` - ${text}` : ''}`);
     }
 
     const reader = response.body.getReader();
@@ -153,7 +271,7 @@ export async function* streamChat(messages, opportunity) {
       }
     }
   } catch (error) {
-    yield `⚠️ ${error?.message || 'AI request failed.'}`;
+    yield `Error: ${error?.message || 'AI request failed.'}`;
   }
 }
 
@@ -239,6 +357,30 @@ The email should:
  * Tailor an opportunity listing for a specific user profile
  */
 export async function generateTailoredListing(opportunity, profile) {
+  // Check if we should use mock responses
+  if (!AI_API_KEY || AI_API_KEY.includes('placeholder') || AI_API_KEY.includes('test-key')) {
+    console.log('Using mock tailored listing response');
+    
+    // Generate a mock tailored analysis
+    const mockAnalysis = `## AI Advantage Report
+
+**Why You?**
+- Your ${profile.major} background aligns perfectly with this ${opportunity.type}'s focus on ${opportunity.requirements[0]?.toLowerCase() || 'technical skills'}
+- Your interests in ${profile.interests.slice(0, 2).join(' and ')} directly match the key requirements for this role
+
+**Application Strategy**
+- Highlight your experience with ${opportunity.requirements[1]?.toLowerCase() || 'relevant technologies'} in your application materials
+- Emphasize projects that demonstrate your ability to ${opportunity.description.split('.')[0].toLowerCase()}
+
+**Institutional & Local Context**
+- ${profile.college}'s reputation in ${profile.major} gives you a competitive edge for this position
+- Being located in ${profile.county}, ${profile.state} provides unique networking opportunities with ${opportunity.organization}
+
+This opportunity is an excellent match for your profile. Apply with confidence!`;
+
+    return mockAnalysis;
+  }
+
   const prompt = `
     Analyze this career opportunity and tailor it for the following student profile:
     
