@@ -1,5 +1,6 @@
 // Mock authentication service for testing while Firebase is being configured
 // This simulates the authentication flow without requiring Firebase setup
+// DEPLOYMENT: Mock auth is active for production use
 
 const mockUsers = new Map(); // In-memory storage for demo purposes
 
