@@ -1,16 +1,33 @@
-# React + Vite
+# Altezza — Your AI Career Agent
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Hackathon — [DEV ARENA]
+Welcome to the official hackathon repository by [GDG,UCE-OU].
 
-Currently, two official plugins are available:
+## Team Details
+- **Team Name:Mahreen&sumaiya
+- **Team Lead:Mahreen
+- **Team Members:
+  - Member 1:sumaiya
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Problem Statement
+Altezza is an AI-powered career agent that provides highly personalized, localized academic and employment opportunities, complete with "AI Advantage" application tailoring.
 
-## React Compiler
+## Submission Guidelines
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- All code must be pushed to your **forked repository**
+- Your repository must be **public**
+- **Submission Deadline:** [17th april 3:59pm]
 
-## Expanding the ESLint configuration
+## 📋 Rules & Regulations
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Use of AI is permitted
+- Use of open source libraries is permitted
+- Plagiarism will lead to immediate disqualification
+- The decision of the judges will be final
+
+## Contact
+
+For any queries, reach out to us at:
+- **contact number** : [7981972900]
+
+> Good luck to all participating teams!
