@@ -6,8 +6,11 @@ export default function Navbar({ onAuthClick }) {
   const { isLoggedIn, user, logout } = useApp();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const displayName = user?.displayName || user?.name || user?.email || 'User';
+  const avatarLetter = (displayName || 'U').charAt(0).toUpperCase();
+
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -48,9 +51,9 @@ export default function Navbar({ onAuthClick }) {
               </Link>
               <div className="navbar__user">
                 <div className="navbar__avatar">
-                  {(user?.name || 'U').charAt(0).toUpperCase()}
+                  {avatarLetter}
                 </div>
-                <span className="navbar__username">{user?.name}</span>
+                <span className="navbar__username">{displayName}</span>
               </div>
               <button className="navbar__logout" onClick={handleLogout}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import AuthModal from '../components/AuthModal';
 import FloatingLines from '../components/FloatingLines';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import './Landing.css';
 
@@ -77,6 +78,11 @@ export default function Landing() {
     }
   };
 
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div className="landing" id="landing-page">
       <div className="page-bg-premium" />
@@ -137,6 +143,7 @@ export default function Landing() {
             </motion.button>
             <motion.button 
               className="btn-secondary landing__cta-secondary"
+              onClick={() => scrollToSection('features-section')}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >

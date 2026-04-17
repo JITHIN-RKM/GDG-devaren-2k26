@@ -60,6 +60,32 @@
   font-family: 'Fira Code', monospace;
 }
 
+/* React Markdown Styles */
+.chat-msg__content p {
+  margin-bottom: var(--space-sm);
+  white-space: normal;
+}
+
+.chat-msg__content p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-msg__content ul,
+.chat-msg__content ol {
+  margin-left: var(--space-lg);
+  margin-bottom: var(--space-sm);
+  white-space: normal;
+}
+
+.chat-msg__content li {
+  margin-bottom: 4px;
+}
+
+.chat-msg__content strong {
+  font-weight: 800;
+  color: var(--accent-cyan);
+}
+
 .chat-msg__time {
   display: block;
   font-size: 0.7rem;

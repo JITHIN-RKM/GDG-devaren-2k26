@@ -16,6 +16,27 @@ Internships, hackathons, research openings, and scholarships are scattered acros
 ## Description
 Build an AI agent that maintains a profile for each student covering skills, CGPA, year, branch, and goals, and scans opportunity platforms in the background. It filters and ranks results against the student profile and delivers a daily shortlist tailored to them. When a student opens a listing, the agent audits their resume against it and drafts a cover letter or cold email. Over time it learns what the student actually engages with and adjusts accordingly.
 
+## Local setup
+
+```bash
+npm install
+npm run dev
+```
+
+## Configure AI (for deployed chatbot)
+
+This project calls an **OpenAI-compatible** chat API from the browser using Vite env vars.
+
+- Copy `.env.example` to `.env.local` and fill in your values.
+- In your hosting provider (Vercel/Netlify/etc.), set the same env vars.
+
+Required:
+- `VITE_AI_API_KEY`
+
+Optional:
+- `VITE_AI_BASE_URL` (default: `https://api.openai.com/v1`)
+- `VITE_AI_MODEL` (default: `gpt-4o-mini`)
+
 ## Submission Guidelines
 
 - All code must be pushed to your **forked repository**

@@ -242,12 +242,12 @@ export default function FloatingLines({
   const targetParallaxRef = useRef(new Vector2(0, 0));
   const currentParallaxRef = useRef(new Vector2(0, 0));
 
-  const getLineCount = (waveType) => {
+  const getLineCount = () => {
     if (typeof lineCount === 'number') return lineCount;
     return 6;
   };
 
-  const getLineDistance = (waveType) => {
+  const getLineDistance = () => {
     if (typeof lineDistance === 'number') return lineDistance;
     return 5;
   };

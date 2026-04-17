@@ -127,7 +127,37 @@ export default function ListingDetail() {
   if (!opportunity) {
     return (
       <div className="listing-loading">
-        <div className="listing-loading__spinner" />
+        <div className="listing-loading__layout">
+          {/* Skeleton Left Panel */}
+          <div className="skeleton-panel">
+            <div className="skeleton skeleton-badge" />
+            <div className="skeleton skeleton-title" />
+            <div className="skeleton skeleton-org" />
+            
+            <div className="skeleton skeleton-match" />
+            
+            <div className="skeleton-meta">
+              <div className="skeleton skeleton-meta-box" />
+              <div className="skeleton skeleton-meta-box" />
+              <div className="skeleton skeleton-meta-box" />
+            </div>
+
+            <div className="skeleton skeleton-text w-100" />
+            <div className="skeleton skeleton-text w-90" />
+            <div className="skeleton skeleton-text w-80" />
+            <br />
+            <div className="skeleton skeleton-text w-100" />
+            <div className="skeleton skeleton-text w-60" />
+          </div>
+
+          {/* Skeleton Right Panel */}
+          <div className="skeleton-panel">
+            <div className="skeleton skeleton-badge" style={{ width: '120px', marginBottom: '40px' }} />
+            <div className="skeleton skeleton-text w-80" />
+            <div className="skeleton skeleton-text w-60" />
+            <div className="skeleton skeleton-text w-90" style={{ marginTop: '20px' }} />
+          </div>
+        </div>
       </div>
     );
   }

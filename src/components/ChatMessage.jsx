@@ -1,3 +1,4 @@
+import ReactMarkdown from 'react-markdown';
 import './ChatMessage.css';
 
 export default function ChatMessage({ message }) {
@@ -17,12 +18,7 @@ export default function ChatMessage({ message }) {
       )}
       <div className="chat-msg__bubble">
         <div className="chat-msg__content">
-          {message.content.split('\n').map((line, i) => (
-            <span key={i}>
-              {line}
-              {i < message.content.split('\n').length - 1 && <br />}
-            </span>
-          ))}
+          <ReactMarkdown>{message.content}</ReactMarkdown>
         </div>
         {message.timestamp && (
           <span className="chat-msg__time">

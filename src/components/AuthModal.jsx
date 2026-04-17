@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
+import { useState } from 'react';
 import { signInWithEmail, signUpWithEmail } from '../services/firebase';
 import './AuthModal.css';
 
@@ -10,8 +8,7 @@ export default function AuthModal({ isOpen, onClose }) {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
-  const { login } = useApp();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
@@ -32,7 +29,7 @@ export default function AuthModal({ isOpen, onClose }) {
     setLoading(true);
 
     try {
-      const { user, error: authError } = isLogin 
+      const { error: authError } = isLogin
         ? await signInWithEmail(email, password)
         : await signUpWithEmail(email, password, name);
 
@@ -42,10 +39,10 @@ export default function AuthModal({ isOpen, onClose }) {
         return;
       }
 
-      // Context will handle state update via onAuthChange
+      // Context state updates via Firebase onAuthStateChanged listener
       setLoading(false);
       onClose();
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred. Please try again.');
       setLoading(false);
     }

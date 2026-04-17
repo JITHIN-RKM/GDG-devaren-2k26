@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { saveUserProfile } from '../services/firebase';
@@ -95,7 +95,7 @@ export default function Onboarding() {
       }
       setProfile(profileData);
       navigate('/dashboard');
-    } catch (err) {
+    } catch {
       setErrors({ submit: 'Failed to save profile. Please try again.' });
     } finally {
       setIsSaving(false);

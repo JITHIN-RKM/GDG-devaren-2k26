@@ -6,7 +6,7 @@ import Onboarding from './pages/Onboarding';
 import Dashboard from './pages/Dashboard';
 import ListingDetail from './pages/ListingDetail';
 import AuthModal from './components/AuthModal';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 function ProtectedRoute({ children }) {
   const { isLoggedIn, isAuthLoading } = useApp();

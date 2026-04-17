@@ -1,5 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
-import { onAuthChange, getUserProfile } from '../services/firebase';
+import { onAuthChange, getUserProfile, logOut } from '../services/firebase';
 
 const AppContext = createContext(null);
 
@@ -37,13 +38,15 @@ function appReducer(state, action) {
         isAuthLoading: false,
       };
     case 'SET_PROFILE':
-      const profile = { ...state.profile, ...action.payload };
-      const isProfileComplete = !!(profile.major && profile.state && profile.college);
-      return {
-        ...state,
-        profile,
-        isProfileComplete,
-      };
+      {
+        const profile = { ...state.profile, ...action.payload };
+        const isProfileComplete = !!(profile.major && profile.state && profile.college);
+        return {
+          ...state,
+          profile,
+          isProfileComplete,
+        };
+      }
     case 'LOGOUT':
       return {
         ...initialState,
@@ -83,7 +86,7 @@ export function AppProvider({ children }) {
         
         try {
           // Fetch real profile from Firestore
-          const { data, error } = await getUserProfile(user.uid);
+          const { data, error: _error } = await getUserProfile(user.uid);
           if (data) {
             console.log('Altezza: Profile synced from Firestore');
             dispatch({ type: 'SET_PROFILE', payload: data });
@@ -106,8 +109,13 @@ export function AppProvider({ children }) {
     dispatch({ type: 'SET_AUTH', payload: { user: userData } });
   }, []);
 
-  const logout = useCallback(() => {
-    dispatch({ type: 'LOGOUT' });
+  const logout = useCallback(async () => {
+    try {
+      await logOut();
+    } finally {
+      // Ensure local state clears even if signOut fails (offline, etc.)
+      dispatch({ type: 'LOGOUT' });
+    }
   }, []);
 
   const setProfile = useCallback((profileData) => {

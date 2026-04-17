@@ -1,14 +1,22 @@
 /**
- * AI Service — Ollama GLM 5.1 Cloud Integration
+ * AI Service — Cloud Chat API (OpenAI-compatible)
  *
- * Model: glm-5.1:cloud
- * API Key: configured below
- * Endpoint: Ollama local proxy at http://localhost:11434
+ * IMPORTANT:
+ * - This runs in the browser. Your API key will be exposed to clients.
+ * - For production, proxy this through a backend.
  */
 
-const OLLAMA_BASE_URL = 'http://localhost:11434';
-const MODEL_NAME = 'llama3.1:8b';
-const API_KEY = '4d9ab350a1814ceb9ac42acc320d62d3.bcdfZ9bmoy175JiFYzsbR65F';
+const AI_BASE_URL = (import.meta.env.VITE_AI_BASE_URL || 'https://api.openai.com/v1').replace(/\/$/, '');
+const AI_API_KEY = import.meta.env.VITE_AI_API_KEY || '';
+const AI_MODEL = import.meta.env.VITE_AI_MODEL || 'gpt-4o-mini';
+
+function assertConfigured() {
+  if (!AI_API_KEY) {
+    throw new Error(
+      'AI is not configured. Set VITE_AI_API_KEY (and optionally VITE_AI_BASE_URL, VITE_AI_MODEL) in your environment.'
+    );
+  }
+}
 
 /**
  * Build a system prompt that includes the opportunity context.
@@ -38,65 +46,87 @@ Your job is to:
 Be concise, encouraging, and specific. Reference details from the opportunity listing when relevant.`;
 }
 
+function toChatMessages(messages, systemPrompt) {
+  return [
+    { role: 'system', content: systemPrompt },
+    ...messages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    })),
+  ];
+}
+
+function extractStreamDelta(json) {
+  // OpenAI-compatible: { choices: [{ delta: { content } }] }
+  const choice = json?.choices?.[0];
+  return choice?.delta?.content || '';
+}
+
+function extractNonStreamContent(json) {
+  // OpenAI-compatible: { choices: [{ message: { content } }] }
+  const choice = json?.choices?.[0];
+  return choice?.message?.content || '';
+}
+
 /**
- * Send a chat message to Ollama and get a streamed response.
+ * Send a chat message to a cloud API and get a streamed response.
  * Returns an async generator that yields text chunks.
  */
 export async function* streamChat(messages, opportunity) {
   const systemPrompt = buildSystemPrompt(opportunity);
 
-  const formattedMessages = [
-    { role: 'system', content: systemPrompt },
-    ...messages.map(m => ({
-      role: m.role,
-      content: m.content,
-    })),
-  ];
+  const formattedMessages = toChatMessages(messages, systemPrompt);
 
   try {
-    const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+    assertConfigured();
+
+    const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${AI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: MODEL_NAME,
+        model: AI_MODEL,
         messages: formattedMessages,
         stream: true,
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+      const text = await response.text().catch(() => '');
+      throw new Error(`AI API error: ${response.status} ${response.statusText}${text ? ` — ${text}` : ''}`);
     }
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
+    let buffer = '';
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split('\n').filter(line => line.trim());
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
 
       for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('data:')) continue;
+        const data = trimmed.slice('data:'.length).trim();
+        if (!data || data === '[DONE]') continue;
+
         try {
-          const json = JSON.parse(line);
-          if (json.message && json.message.content) {
-            yield json.message.content;
-          }
+          const json = JSON.parse(data);
+          const delta = extractStreamDelta(json);
+          if (delta) yield delta;
         } catch {
-          // Skip malformed JSON lines
+          // ignore malformed JSON fragments
         }
       }
     }
   } catch (error) {
-    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      yield `⚠️ Unable to connect to the AI service. Please make sure Ollama is running locally.\n\nRun this command to start:\n\`\`\`\nollama run glm-5.1:cloud\n\`\`\`\n\nThen try again.`;
-    } else {
-      yield `Error: ${error.message}`;
-    }
+    yield `⚠️ ${error?.message || 'AI request failed.'}`;
   }
 }
 
@@ -106,39 +136,33 @@ export async function* streamChat(messages, opportunity) {
 export async function sendChat(messages, opportunity) {
   const systemPrompt = buildSystemPrompt(opportunity);
 
-  const formattedMessages = [
-    { role: 'system', content: systemPrompt },
-    ...messages.map(m => ({
-      role: m.role,
-      content: m.content,
-    })),
-  ];
+  const formattedMessages = toChatMessages(messages, systemPrompt);
 
   try {
-    const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+    assertConfigured();
+
+    const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
+        Authorization: `Bearer ${AI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: MODEL_NAME,
+        model: AI_MODEL,
         messages: formattedMessages,
         stream: false,
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Ollama API error: ${response.status}`);
+      const text = await response.text().catch(() => '');
+      throw new Error(`AI API error: ${response.status}${text ? ` — ${text}` : ''}`);
     }
 
     const data = await response.json();
-    return data.message?.content || 'No response received.';
+    return extractNonStreamContent(data) || 'No response received.';
   } catch (error) {
-    if (error.message.includes('Failed to fetch')) {
-      return '⚠️ Unable to connect to AI service. Please ensure Ollama is running with `ollama run glm-5.1:cloud`.';
-    }
-    return `Error: ${error.message}`;
+    return `⚠️ ${error?.message || 'AI request failed.'}`;
   }
 }
 
@@ -212,22 +236,12 @@ export async function generateTailoredListing(opportunity, profile) {
   `;
 
   try {
-    const response = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: MODEL_NAME,
-        prompt: prompt,
-        stream: false,
-      }),
-    });
-
-    if (!response.ok) throw new Error('Failed to reach AI service');
-    
-    const result = await response.json();
-    return result.response;
+    const content = await sendChat(
+      [{ role: 'user', content: prompt }],
+      // tailored analysis still benefits from opportunity context in the system prompt
+      opportunity
+    );
+    return content;
   } catch (error) {
     console.error('AI Tailoring failed:', error);
     return null;
