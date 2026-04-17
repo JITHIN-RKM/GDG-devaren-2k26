@@ -1,10 +1,10 @@
-# Altezza — OpportunityRadar: AI Agent for Internship and Opportunity Discovery
+# Altezza : AI Agent for Internship and Opportunity Discovery
 
 Hackathon — [DEV ARENA]
 Welcome to the official hackathon repository by [GDG,UCE-OU].
 
 ## Team Details
-- **Team Name**: Altezza
+- **Team Name**: TEAM GANDEEVAM
 - **Team Members**:
   - Member 1: CHRIS PREETHAM
   - Member 2: JITHIN ROKKAM
